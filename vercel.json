@@ -1,6 +1,6 @@
 {
+  "outputDirectory": "public",
   "rewrites": [
-    { "source": "/v/:filename", "destination": "/api/v/[filename]" },
-    { "source": "/(.*)", "destination": "/api/index" }
+    { "source": "/v/:filename", "destination": "/api/v/[filename]" }
   ]
 }
