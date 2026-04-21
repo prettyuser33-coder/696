@@ -24,7 +24,7 @@
       pointer-events: none;
     }
     
-    @font-face { font-family: 'VCR'; src: url('https://fonts.cdnfonts.com/s/7069/VCR_OSD_MONO_1.002.woff2') format('woff2'), url('https://fonts.cdnfonts.com/s/7069/VCR_OSD_MONO_1.002.woff') format('woff'); }
+    @font-face { font-family: 'VCR'; src: local('VCR OSD Mono'), url('https://fonts.cdnfonts.com/s/14798/VCR_OSD_MONO_1.001[1].woff') format('woff'); }
     body { font-family: 'VCR', sans-serif; margin: 0; padding: 0; background: #0F0F0F; color: rgba(255, 255, 255, 0.61); height: 100vh; overflow-x: hidden; overflow-y: hidden; display: flex; justify-content: center; align-items: center; position: relative; }
     #playpausebtn img { width: 25px; height: 25px; }
     .fade-out { opacity: 0; transition: opacity 1s ease; display: none; }
@@ -544,7 +544,7 @@
     <div class="video-layout">
       <div class="video-player-shell">
         <div class="video-stage" id="videoStage">
-          <video id="modernVideoPlayer" preload="metadata" playsinline controlslist="nodownload nofullscreen" oncontextmenu="return false;" poster="/thumbs/nqfeDGwS2.jpg"></video>
+          <video id="modernVideoPlayer" preload="none" playsinline controlslist="nodownload nofullscreen" oncontextmenu="return false;" poster="/thumbs/nqfeDGwS2.jpg"></video>
           <div class="video-pause-overlay" id="videoPauseOverlay">
             <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
           </div>
