@@ -368,13 +368,13 @@
     .up-next-item video {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: cover;
       display: block;
       border-radius: 7px;
-      background: #000;
+      background: #111;
     }
     .up-next-item.no-preview {
-      background: url('696.jpg') center center / cover no-repeat;
+      background: #111;
     }
     #videostablexd {
       width: 100%;
@@ -926,7 +926,7 @@
         const name = file.replace('/v/', '').replace(/\.[^.]+$/, '');
         items.push(`
           <div class="up-next-item" data-video-index="${idx}">
-            <video muted playsinline preload="metadata" poster="/thumbs/${name}.jpg">
+            <video muted playsinline preload="none" poster="/thumbs/${name}.jpg">
               <source src="${file}">
             </video>
           </div>
