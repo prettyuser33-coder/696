@@ -1,0 +1,47 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.{css,js,png,jpg,mp3,ttf}",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "thumbs/*.jpg",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/v/(.+)",
+      "dest": "/api/v/[filename]?filename=$1"
+    },
+    {
+      "src": "/thumbs/(.+)",
+      "dest": "/thumbs/$1"
+    },
+    {
+      "src": "/server\\.js",
+      "dest": "/"
+    },
+    {
+      "src": "/package\\.json",
+      "dest": "/"
+    },
+    {
+      "src": "/generate-thumbs\\.js",
+      "dest": "/"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ]
+}
