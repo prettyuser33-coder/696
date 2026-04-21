@@ -3,6 +3,7 @@
   "buildCommand": "",
   "outputDirectory": ".",
   "rewrites": [
-    { "source": "/v/:filename", "destination": "/api/v/[filename]" }
+    { "source": "/v/:filename", "destination": "/api/v/[filename]" },
+    { "source": "/thumbs/:name", "destination": "/api/thumbs/[name]" }
   ]
 }
