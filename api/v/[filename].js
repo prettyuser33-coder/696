@@ -8,12 +8,12 @@ const ALLOWED_VIDEOS = [
   'l2NDdxwS2.mov', '6oZ963wl1.mp4', 'b1ic87FX1.mp4', 'CitJk9gG1.mp4'
 ];
 
-function fetchWithRedirects(url, headers, redirects = 0) {
+function fetchWithRedirects(url, reqHeaders, redirects = 0) {
   return new Promise((resolve, reject) => {
     if (redirects > 10) return reject(new Error('Too many redirects'));
-    const req = https.request(url, { headers }, (res) => {
-      if ([301, 302, 307, 308].includes(res.statusCode)) {
-        return fetchWithRedirects(res.headers.location, headers, redirects + 1)
+    const req = https.request(url, { headers: reqHeaders }, (res) => {
+      if ([301, 302, 307, 308].includes(res.statusCode) && res.headers.location) {
+        return fetchWithRedirects(res.headers.location, reqHeaders, redirects + 1)
           .then(resolve).catch(reject);
       }
       resolve(res);
@@ -26,12 +26,12 @@ function fetchWithRedirects(url, headers, redirects = 0) {
 module.exports = async (req, res) => {
   const { filename } = req.query;
 
-  if (!ALLOWED_VIDEOS.includes(filename)) {
+  if (!filename || !ALLOWED_VIDEOS.includes(filename)) {
     res.writeHead(302, { Location: '/' });
     return res.end();
   }
 
-  // Bloqueia acesso externo — só aceita requests do próprio site
+  // Bloqueia acesso externo
   const referer = req.headers['referer'] || '';
   const host = req.headers['host'] || '';
   if (referer && !referer.includes(host)) {
@@ -39,10 +39,10 @@ module.exports = async (req, res) => {
     return res.end();
   }
 
-  const upstreamUrl = `https://cdn.videy.co/${filename}`;
   const upstreamHeaders = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
     'Referer': 'https://videy.co/',
+    'Accept': '*/*',
   };
 
   if (req.headers['range']) {
@@ -50,21 +50,34 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const upstream = await fetchWithRedirects(upstreamUrl, upstreamHeaders);
+    const upstream = await fetchWithRedirects(
+      `https://cdn.videy.co/${filename}`,
+      upstreamHeaders
+    );
 
-    res.writeHead(upstream.statusCode, {
+    const responseHeaders = {
       'Content-Type': upstream.headers['content-type'] || 'video/mp4',
-      'Cache-Control': 'no-store, no-cache',
-      'Content-Disposition': 'inline; filename="video"',
+      'Cache-Control': 'no-store',
+      'Content-Disposition': 'inline',
       'X-Content-Type-Options': 'nosniff',
-      ...(upstream.headers['content-length'] && { 'Content-Length': upstream.headers['content-length'] }),
-      ...(upstream.headers['content-range'] && { 'Content-Range': upstream.headers['content-range'] }),
-      ...(upstream.headers['accept-ranges'] && { 'Accept-Ranges': upstream.headers['accept-ranges'] }),
-    });
+      'Access-Control-Allow-Origin': '*',
+    };
 
+    if (upstream.headers['content-length'])
+      responseHeaders['Content-Length'] = upstream.headers['content-length'];
+    if (upstream.headers['content-range'])
+      responseHeaders['Content-Range'] = upstream.headers['content-range'];
+    if (upstream.headers['accept-ranges'])
+      responseHeaders['Accept-Ranges'] = upstream.headers['accept-ranges'];
+
+    res.writeHead(upstream.statusCode, responseHeaders);
     upstream.pipe(res);
+
+    req.on('close', () => upstream.destroy());
   } catch (err) {
-    res.writeHead(302, { Location: '/' });
-    res.end();
+    if (!res.headersSent) {
+      res.writeHead(302, { Location: '/' });
+      res.end();
+    }
   }
 };
