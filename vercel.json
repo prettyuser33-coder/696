@@ -1,6 +1,6 @@
 {
+  "outputDirectory": ".",
   "rewrites": [
-    { "source": "/v/:filename", "destination": "/api/v/[filename]" },
-    { "source": "/", "destination": "/index.html" }
+    { "source": "/v/:filename", "destination": "/api/v/[filename]" }
   ]
 }
